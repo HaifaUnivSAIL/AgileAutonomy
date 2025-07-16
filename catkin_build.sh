@@ -330,6 +330,20 @@ sed -i 's#<Open3D/IO/ClassIO/PointCloudIO.h>#<Open3D/io/PointCloudIO.h>#g' "$KDT
 sed -i 's#<Open3D/Geometry/KDTreeFlann.h>#<Open3D/geometry/KDTreeFlann.h>#g' "$ELLIPSOID_UTIL_HEADER"
 sed -i 's#<Open3D/Geometry/PointCloud.h>#<Open3D/geometry/PointCloud.h>#g' "$ELLIPSOID_UTIL_HEADER"
 
+echo "Patching gazebo_noisydepth_plugin.h to remove dynamic_reconfigure include..."
+sed -i '/#include <dynamic_reconfigure\/server.h>/d' \
+    src/rotors_simulator/rotors_gazebo_plugins/include/rotors_gazebo_plugins/gazebo_noisydepth_plugin.h
+echo "Patching rotors_gazebo_plugins/CMakeLists.txt to include CXX_STANDARD 14"
+sed -i '/add_definitions(-std=c++11)/i \
+# Specify C++14 standard (fix for placement-new errors)\n\
+set(CMAKE_CXX_STANDARD 14)\n\
+set(CMAKE_CXX_STANDARD_REQUIRED ON)\n\
+set(CMAKE_CXX_EXTENSIONS OFF)
+' src/rotors_simulator/rotors_gazebo_plugins/CMakeLists.txt
+sed -i '/add_definitions(-std=c++11)/d' \
+src/rotors_simulator/rotors_gazebo_plugins/CMakeLists.txt
+
+    
 # Optional: confirm what was changed
 echo "Patched includes in:"
 echo " - $KDTREE_HEADER"
