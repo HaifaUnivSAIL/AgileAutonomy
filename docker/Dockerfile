@@ -40,6 +40,19 @@ RUN apt-get update && apt-get install -y \
     python3-vcstool \
     && rm -rf /var/lib/apt/lists/*
 
+# Gazebo development libraries and ROS integration packages
+RUN apt-get update && apt-get install -y \
+    libgazebo11-dev \
+    ros-noetic-gazebo-ros \
+    ros-noetic-gazebo-plugins \
+    ros-noetic-gazebo-ros-control \
+    && rm -rf /var/lib/apt/lists/*
+    
+# Google glog library required for rotors_gazebo_plugins
+RUN apt-get update && apt-get install -y \
+    libgoogle-glog-dev \
+    && rm -rf /var/lib/apt/lists/*
+    
 # Install GCC/G++ 7.5
 RUN apt-get update && apt-get install -y \
     gcc-7 g++-7 \
