@@ -47,7 +47,31 @@ RUN apt-get update && apt-get install -y \
     && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 100 \
     && rm -rf /var/lib/apt/lists/*
 
+# Set working directory
 WORKDIR /workspace
+
+# Install system deps for Anaconda
+RUN apt update && apt install -y wget bzip2 sudo git
+
+# Download and install full Anaconda 4.8.3 (Python 3.7)
+WORKDIR /opt
+RUN wget https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh -O anaconda.sh && \
+    bash anaconda.sh -b -p /opt/anaconda && \
+    rm anaconda.sh
+
+# Add Anaconda to PATH
+ENV PATH="/opt/anaconda/bin:$PATH"
+
+# Create a conda environment named ros_env (Python 3.7)
+RUN conda create -n ros_env python=3.7 -y
+
+# Install empy via pip (conda doesn't provide it for this setup)
+RUN /opt/anaconda/bin/pip install empy && \
+    /opt/anaconda/envs/ros_env/bin/pip install empy
+
+# Ensure conda is initialized and ros_env is activated on container start
+RUN echo "source /opt/anaconda/etc/profile.d/conda.sh" >> ~/.bashrc && \
+    echo "conda activate ros_env" >> ~/.bashrc
 
 CMD ["/bin/bash"]
 
