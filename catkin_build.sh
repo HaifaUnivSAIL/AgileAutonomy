@@ -331,8 +331,9 @@ sed -i 's#<Open3D/Geometry/KDTreeFlann.h>#<Open3D/geometry/KDTreeFlann.h>#g' "$E
 sed -i 's#<Open3D/Geometry/PointCloud.h>#<Open3D/geometry/PointCloud.h>#g' "$ELLIPSOID_UTIL_HEADER"
 
 echo "Patching gazebo_noisydepth_plugin.h to remove dynamic_reconfigure include..."
+echo "PWD is: $(pwd)"
 sed -i '/#include <dynamic_reconfigure\/server.h>/d' \
-    agile_autonomy_ws/catkin_aa/src/rotors_simulator/rotors_gazebo_plugins/include/rotors_gazebo_plugins/gazebo_noisydepth_plugin.h
+    src/rotors_simulator/rotors_gazebo_plugins/include/rotors_gazebo_plugins/gazebo_noisydepth_plugin.h
     
 # Optional: confirm what was changed
 echo "Patched includes in:"
