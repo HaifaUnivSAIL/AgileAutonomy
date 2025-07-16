@@ -1,0 +1,4 @@
+# Ignore Open3D if installed
+/Open3D/
+# Ignore the ROS workspace dir
+/agile_autonomy_ws
