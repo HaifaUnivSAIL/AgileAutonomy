@@ -10,30 +10,30 @@ Follow the steps below to install Docker, set up the container environment, and 
    ```bash
    ./docker/build.sh
 
-    Launch the Docker container:
-
+2. **Launch the Docker container**:
+   ```bash
     ./docker/launch.sh
 
-🧱 Inside the Docker Container
+## 🧱 Inside the Docker Container
 
-    Install preliminary dependencies (e.g., open3D, open3D_conversions):
+3. **Install preliminary dependencies (e.g., open3D, open3D_conversions)**:
+   ```bash
+    ./setup_agile_autonomy.sh
 
-./setup_agile_autonomy.sh
+4. **Perform the initial Catkin build (this also builds open3D)**:
+   ```bash
+    ./catkin_build.sh --first-build
 
-Perform the initial Catkin build (this also builds open3D):
-
-./catkin_build.sh --first-build
-
-Run a second build to fix any remaining packages:
-
+5. **Run a second build to fix any remaining packages**:
+   ```bash
     ./catkin_build.sh
 
 📝 Notes
 
-    💡 To rebuild Open3D later at any point:
+1. **💡 To rebuild Open3D later at any point**:
+   ```bash
+    ./catkin_build.sh --build_open3d
 
-./catkin_build.sh --build_open3d
-
-🧹 To clean everything (containers, volumes, and build folders):
-
-./remove_everything.sh
+2. **🧹 To clean everything (containers, volumes, and build folders)**:
+   ```bash
+    ./remove_everything.sh
