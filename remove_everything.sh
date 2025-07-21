@@ -6,8 +6,12 @@ echo "Done"
 printf "Removing the folder Open3D..."
 sudo rm -rf Open3D/
 echo "Done"
+printf "Removing the folder docker_usr_local..."
+sudo rm -rf docker_usr_local/
+echo "Done"
 printf "Removing the agile_autonomy_container..."
 sudo docker rm -f agile_autonomy_container
+echo "Done"
 sudo docker container prune
 sudo docker ps -a
 echo "Done"

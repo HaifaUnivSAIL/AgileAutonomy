@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM nvidia/cuda:12.2.2-devel-ubuntu20.04
 
 # Set frontend to noninteractive to avoid prompts
 ENV DEBIAN_FRONTEND=noninteractive
@@ -87,4 +87,3 @@ RUN echo "source /opt/anaconda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate ros_env" >> ~/.bashrc
 
 CMD ["/bin/bash"]
-

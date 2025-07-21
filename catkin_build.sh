@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Make sure catkin uses the system CMake
+catkin config --cmake /usr/bin/cmake
+
 BUILD_OPEN3D=false
 FIRST_BUILD=false
 for arg in "$@"
@@ -82,8 +85,8 @@ sudo apt-get install -y \
   libzstd-dev \
   libfmt-dev  \
   libglfw3-dev \
-  libsdl2-dev \
-  nvidia-cuda-toolkit
+  libsdl2-dev #\
+  #nvidia-cuda-toolkit
 
 
 echo "System dependencies installed."
@@ -158,8 +161,9 @@ echo "Step Six...Done"
 
 echo "Cloning the motion_primitive_library:"
 cd /workspace/agile_autonomy_ws/catkin_aa/src
-git clone git@github.com:ethz-asl/motion_primitive_library.git
-cd ../../
+#git clone git@github.com:ethz-asl/motion_primitive_library.git
+git clone https://github.com/sikang/motion_primitive_library.git
+git clone https://github.com/sikang/DecompUtil.git decomp_util
 echo "Step Seven...Done"
 
 
@@ -215,6 +219,7 @@ else
   sed -i '37s/cmake_minimum_required( VERSION [0-9]\+\.[0-9]\+ )/cmake_minimum_required( VERSION 3.5 )/' /workspace/agile_autonomy_ws/catkin_aa/build/assimp_catkin/assimp_src-prefix/src/assimp_src/CMakeLists.txt
   sed -i '46s/cmake_minimum_required( *VERSION [0-9]\+\.[0-9]\+ *)/cmake_minimum_required(VERSION 3.5)/' /workspace/agile_autonomy_ws/catkin_aa/build/assimp_catkin/assimp_src-prefix/src/assimp_src/code/CMakeLists.txt
   sed -i 's/cmake_policy(SET CMP0053 OLD)/cmake_policy(SET CMP0053 NEW)/' /workspace/agile_autonomy_ws/catkin_aa/src/glog_catkin/CMakeLists.txt
+  sed -i 's/cmake_minimum_required(VERSION 2.8.3)/cmake_minimum_required(VERSION 3.5)/' src/decomp_util/CMakeLists.txt
 fi
 
 sudo apt update
