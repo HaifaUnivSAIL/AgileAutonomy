@@ -28,6 +28,10 @@ Follow the steps below to install Docker, set up the container environment, and 
    ```bash
     ./catkin_build.sh
 
+6. **Run a after the second call to catkin_build.sh to run everything up to the single terminal simulation**:
+   ```bash
+    ./final_touch.sh
+
 📝 Notes
 
 1. **💡 To rebuild Open3D later at any point**:
