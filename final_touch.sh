@@ -38,6 +38,7 @@ echo "Done."
 source /workspace/agile_autonomy_ws/catkin_aa/devel/setup.bash
 sudo apt-get install python3-defusedxml
 pip install defusedxml
+pip install PySide2
 apt update && apt install -y tmux
 
 echo "To test if the installation worked you should see the defusedxml version:"
