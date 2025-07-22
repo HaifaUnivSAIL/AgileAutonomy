@@ -68,6 +68,8 @@ find "$(pwd)" -name ".git" | while read gitdir; do
     git config --global --add safe.directory "$repo"
 done
 
+git config --global --add safe.directory /workspace/agile_autonomy_ws/catkin_aa/src/rpg_mpl_ros
+
 
 git submodule update --init --recursive
 

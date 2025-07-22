@@ -66,7 +66,7 @@ WORKDIR /workspace
 # Install system deps for Anaconda
 RUN apt update && apt install -y wget bzip2 sudo git
 
-# Download and install full Anaconda 4.8.3 (Python 3.7)
+# Download and install full Anaconda 4.8.3 (Python 3.10)
 WORKDIR /opt
 RUN wget https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh -O anaconda.sh && \
     bash anaconda.sh -b -p /opt/anaconda && \
@@ -75,12 +75,15 @@ RUN wget https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh -O 
 # Add Anaconda to PATH
 ENV PATH="/opt/anaconda/bin:$PATH"
 
-# Create a conda environment named ros_env (Python 3.7)
-RUN conda create -n ros_env python=3.7 -y
+# Create a conda environment named ros_env (Python 3.10)
+RUN conda create -n ros_env python=3.10 -y
 
 # Install empy via pip (conda doesn't provide it for this setup)
 RUN /opt/anaconda/bin/pip install empy && \
     /opt/anaconda/envs/ros_env/bin/pip install empy
+    
+# Fix for numpy_eigen incompatibility with NumPy >= 1.24
+RUN /opt/anaconda/envs/ros_env/bin/pip install numpy==1.23.5
 
 # Ensure conda is initialized and ros_env is activated on container start
 RUN echo "source /opt/anaconda/etc/profile.d/conda.sh" >> ~/.bashrc && \
