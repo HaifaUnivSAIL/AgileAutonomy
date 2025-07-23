@@ -69,6 +69,8 @@ find "$(pwd)" -name ".git" | while read gitdir; do
 done
 
 git config --global --add safe.directory /workspace/agile_autonomy_ws/catkin_aa/src/rpg_mpl_ros
+git config --global --add safe.directory /workspace/agile_autonomy_ws/catkin_aa/src/rpg_mpl_ros/DecompROS/DecompUtil
+git config --global --add safe.directory /workspace/agile_autonomy_ws/catkin_aa/src/rpg_mpl_ros/DecompROS
 
 
 git submodule update --init --recursive

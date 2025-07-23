@@ -219,7 +219,7 @@ else
   sed -i '37s/cmake_minimum_required( VERSION [0-9]\+\.[0-9]\+ )/cmake_minimum_required( VERSION 3.5 )/' /workspace/agile_autonomy_ws/catkin_aa/build/assimp_catkin/assimp_src-prefix/src/assimp_src/CMakeLists.txt
   sed -i '46s/cmake_minimum_required( *VERSION [0-9]\+\.[0-9]\+ *)/cmake_minimum_required(VERSION 3.5)/' /workspace/agile_autonomy_ws/catkin_aa/build/assimp_catkin/assimp_src-prefix/src/assimp_src/code/CMakeLists.txt
   sed -i 's/cmake_policy(SET CMP0053 OLD)/cmake_policy(SET CMP0053 NEW)/' /workspace/agile_autonomy_ws/catkin_aa/src/glog_catkin/CMakeLists.txt
-  sed -i 's/cmake_minimum_required(VERSION 2.8.3)/cmake_minimum_required(VERSION 3.5)/' src/decomp_util/CMakeLists.txt
+  #sed -i 's/cmake_minimum_required(VERSION 2.8.3)/cmake_minimum_required(VERSION 3.5)/' src/decomp_util/CMakeLists.txt
 fi
 
 sudo apt update
