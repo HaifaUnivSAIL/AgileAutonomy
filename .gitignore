@@ -2,3 +2,5 @@
 /Open3D/
 # Ignore the ROS workspace dir
 /agile_autonomy_ws
+# Pycharm's config files
+/.idea
