@@ -41,3 +41,8 @@ Follow the steps below to install Docker, set up the container environment, and 
 2. **🧹 To clean everything (containers, volumes, and build folders)**:
    ```bash
     ./remove_everything.sh
+    
+3. **💡 To run Pycharm from within the docker just type**:
+   ```bash
+    pycharm
+
