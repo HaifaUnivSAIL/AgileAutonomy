@@ -4,6 +4,10 @@
 HOST_DIR=$(realpath "$(dirname "$0")/..")  # Parent directory of ./docker
 
 CONTAINER_NAME="agile_autonomy_container"
+PYCHARM_VERSION="2025.1.3.1"
+PYCHARM_DIR="/opt/pycharm-community-${PYCHARM_VERSION}"
+PYCHARM_TAR="pycharm-community-${PYCHARM_VERSION}.tar.gz"
+PYCHARM_URL="https://download.jetbrains.com/python/${PYCHARM_TAR}"
 
 # Allow container to access host X server
 xhost +local:root
@@ -24,6 +28,20 @@ else
         --net=host \
         --ipc=host \
         agile_autonomy_base \
-        bash
+        bash -c "
+            if [ ! -d '${PYCHARM_DIR}' ]; then
+                echo '[+] Installing PyCharm Community ${PYCHARM_VERSION}...'
+                apt update && apt install -y wget tar openjdk-17-jdk libfuse2
+                wget -q ${PYCHARM_URL} -P /tmp || (echo '[!] Download failed. Check version or URL.' && exit 1)
+                mkdir -p /opt && tar -xzf /tmp/${PYCHARM_TAR} -C /opt
+                echo '[+] PyCharm installed at ${PYCHARM_DIR}'
+            fi
+
+            # Add alias inside the container for future runs
+            grep -qxF \"alias pycharm='${PYCHARM_DIR}/bin/pycharm.sh &'\" /root/.bashrc || echo \"alias pycharm='${PYCHARM_DIR}/bin/pycharm.sh &'\" >> /root/.bashrc
+
+            echo '[+] To launch PyCharm inside the container, type: pycharm'
+            bash
+        "
 fi
 

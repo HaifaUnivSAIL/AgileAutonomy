@@ -43,4 +43,23 @@ apt update && apt install -y tmux
 
 echo "To test if the installation worked you should see the defusedxml version:"
 python -c "import defusedxml; print(defusedxml.__version__)"
+
+## Changing code errors for running the command "python test_trajectories.py --settings_file=config/test_settings.yaml" successfully: 
+# 1. Replace the usage in the code
+sed -i '/from tensorflow\.python\.keras\.applications import mobilenet/ {
+    s/^/# /
+    a\
+from tensorflow.keras.applications import mobilenet
+}' /workspace/agile_autonomy_ws/catkin_aa/src/agile_autonomy/planner_learning/src/PlannerLearning/models/nets.py
+
+# 2. Replace the usage in the code
+sed -i 's/self\.learning_rate_fn = tf\.keras\.experimental\.CosineDecayRestarts(/self.learning_rate_fn = CosineDecayRestarts(/' /workspace/agile_autonomy_ws/catkin_aa/src/agile_autonomy/planner_learning/src/PlannerLearning/models/plan_learner.py
+
+# 3. Add the import on line 6
+sed -i '6a from tensorflow.keras.optimizers.schedules import CosineDecayRestarts' /workspace/agile_autonomy_ws/catkin_aa/src/agile_autonomy/planner_learning/src/PlannerLearning/models/plan_learner.py
+
+# 4. Comment out the deprecated set_learning_phase(0) command that is also irrelavent in Inference
+sed -i 's/^\s*tf\.keras\.backend\.set_learning_phase(0)/#&/' /workspace/agile_autonomy_ws/catkin_aa/src/agile_autonomy/planner_learning/src/PlannerLearning/PlannerLearning.py
+
+
 roslaunch agile_autonomy simulation.launch
