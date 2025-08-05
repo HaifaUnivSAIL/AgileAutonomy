@@ -2,6 +2,7 @@
 
 # Resolve the absolute host path of the repo root
 HOST_DIR=$(realpath "$(dirname "$0")/..")  # Parent directory of ./docker
+DATASET_DIR=$(realpath "$(dirname "$0")/../../Datasets")  # Datasets directory
 
 CONTAINER_NAME="agile_autonomy_container"
 PYCHARM_VERSION="2025.1.3.1"
@@ -21,6 +22,7 @@ else
         -it \
         --name "$CONTAINER_NAME" \
         -v "${HOST_DIR}:/workspace" \
+        -v "${DATASET_DIR}:/mnt/dataset" \
         -v /tmp/.X11-unix:/tmp/.X11-unix \
         -e DISPLAY=$DISPLAY \
         --env QT_X11_NO_MITSHM=1 \
