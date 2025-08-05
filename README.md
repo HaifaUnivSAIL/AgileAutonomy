@@ -46,9 +46,11 @@ Follow the steps below to install Docker, set up the container environment, and 
    ```bash
     pycharm
 
-4. **💡 Dataset location**:
+##  Dataset location
+
 **Host computer location**:
 Place your data in the "datasets" folder (if doesnt exist create one). 
 Note: The "datasets" folder should reside at the same folder as the project's folder "AgileAutonomy" is (i.e youll see AgileAutonomy/docker/ or AgileAutonomy/setup_agile_autonomy.sh).
+
 **Inside the docker container location**:
 You'll see it  under the "/mnt/dataset" path.
