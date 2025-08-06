@@ -61,5 +61,33 @@ sed -i '6a from tensorflow.keras.optimizers.schedules import CosineDecayRestarts
 # 4. Comment out the deprecated set_learning_phase(0) command that is also irrelavent in Inference
 sed -i 's/^\s*tf\.keras\.backend\.set_learning_phase(0)/#&/' /workspace/agile_autonomy_ws/catkin_aa/src/agile_autonomy/planner_learning/src/PlannerLearning/PlannerLearning.py
 
+# 5. Fixing the plan_learner.py file
+sed -i '76s|.*|            if self.config.freeze_backbone:\n                predictions = self.network(inputs, training=False)\n            else:\n                predictions = self.network(inputs, training=True)|' /workspace/agile_autonomy_ws/catkin_aa/src/agile_autonomy/planner_learning/src/PlannerLearning/models/plan_learner.py
+
+sed -i '96s|.*|        predictions = self.network(inputs, training=False)|' /workspace/agile_autonomy_ws/catkin_aa/src/agile_autonomy/planner_learning/src/PlannerLearning/models/plan_learner.py
+
+sed -i '157,160s|^|#|' /workspace/agile_autonomy_ws/catkin_aa/src/agile_autonomy/planner_learning/src/PlannerLearning/models/plan_learner.py
+
+sed -i '169s|^|#|' /workspace/agile_autonomy_ws/catkin_aa/src/agile_autonomy/planner_learning/src/PlannerLearning/models/plan_learner.py
+
+sed -i '208s|^|#|' /workspace/agile_autonomy_ws/catkin_aa/src/agile_autonomy/planner_learning/src/PlannerLearning/models/plan_learner.py
+
+sed -i '242s|.*|        predictions = self.network(inputs, training=False)|' /workspace/agile_autonomy_ws/catkin_aa/src/agile_autonomy/planner_learning/src/PlannerLearning/models/plan_learner.py
+
+sed -i '142s|.*|            self.train_space_loss.reset_state()|' /workspace/agile_autonomy_ws/catkin_aa/src/agile_autonomy/planner_learning/src/PlannerLearning/models/plan_learner.py
+
+sed -i '143s|.*|            self.val_space_loss.reset_state()|' /workspace/agile_autonomy_ws/catkin_aa/src/agile_autonomy/planner_learning/src/PlannerLearning/models/plan_learner.py
+
+sed -i '166s|.*|                    self.train_space_loss.reset_state()|' /workspace/agile_autonomy_ws/catkin_aa/src/agile_autonomy/planner_learning/src/PlannerLearning/models/plan_learner.py
+
+sed -i '167s|.*|                    self.train_cost_loss.reset_state()|' /workspace/agile_autonomy_ws/catkin_aa/src/agile_autonomy/planner_learning/src/PlannerLearning/models/plan_learner.py
+
+sed -i '181s|.*|            self.val_space_loss.reset_state()|' /workspace/agile_autonomy_ws/catkin_aa/src/agile_autonomy/planner_learning/src/PlannerLearning/models/plan_learner.py
+
+sed -i '182s|.*|            self.val_cost_loss.reset_state()|' /workspace/agile_autonomy_ws/catkin_aa/src/agile_autonomy/planner_learning/src/PlannerLearning/models/plan_learner.py
+
+sed -i '214s|.*|            self.val_space_loss.reset_state()|' /workspace/agile_autonomy_ws/catkin_aa/src/agile_autonomy/planner_learning/src/PlannerLearning/models/plan_learner.py
+
+sed -i '215s|.*|            self.val_cost_loss.reset_state()|' /workspace/agile_autonomy_ws/catkin_aa/src/agile_autonomy/planner_learning/src/PlannerLearning/models/plan_learner.py
 
 roslaunch agile_autonomy simulation.launch
