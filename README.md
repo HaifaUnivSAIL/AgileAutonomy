@@ -32,6 +32,11 @@ Follow the steps below to install Docker, set up the container environment, and 
    ```bash
     ./final_touch.sh
 
+7. **Run this script to setup GPU settings such as CUDA, Cudnn and the matching tf version**:
+   ```bash
+    ./gpu_setup.sh
+
+
 📝 Notes
 
 1. **💡 To rebuild Open3D later at any point**:

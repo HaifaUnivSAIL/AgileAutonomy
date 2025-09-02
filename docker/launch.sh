@@ -23,6 +23,7 @@ else
         --name "$CONTAINER_NAME" \
         -v "${HOST_DIR}:/workspace" \
         -v "${DATASET_DIR}:/mnt/dataset" \
+        -v /usr/local/cuda-12.4:/usr/local/cuda-12.4 \
         -v /tmp/.X11-unix:/tmp/.X11-unix \
         -e DISPLAY=$DISPLAY \
         --env QT_X11_NO_MITSHM=1 \
