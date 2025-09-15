@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive \
     TZ=Etc/UTC \
@@ -97,6 +97,18 @@ RUN apt-get update && apt-get install -y \
     binutils-arm-none-eabi \
     gdb-multiarch \
  && apt-get clean
+USER builder
+
+# 🔧 Fix: Upgrade GCC in Docker
+# You can install a newer GCC via the Ubuntu Toolchain PPA:
+USER root
+RUN apt-get update && apt-get install -y software-properties-common && \
+    add-apt-repository ppa:ubuntu-toolchain-r/test -y && \
+    apt-get update && \
+    apt-get install -y gcc-12 g++-12 && \
+    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 100 && \
+    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 100 && \
+    apt-get clean
 USER builder
 
 # Make env the default python path
