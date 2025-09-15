@@ -58,5 +58,32 @@ ENV PATH=$PATH:/home/builder/ardupilot/Tools/autotest:/usr/lib/ccache
 USER builder
 WORKDIR /home/builder/ardupilot
 
+# Install system deps for Anaconda
+RUN apt update && apt install -y wget bzip2 sudo git
+
+# Download and install full Anaconda 4.8.3 (Python 3.10)
+WORKDIR /opt
+RUN wget https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh -O anaconda.sh && \
+    bash anaconda.sh -b -p /opt/anaconda && \
+    rm anaconda.sh
+
+# Add Anaconda to PATH
+ENV PATH="/opt/anaconda/bin:$PATH"
+
+# Create a new Conda environment for SITL (Python 3.10):
+RUN conda create -n ardupilot_env python=3.10 -y
+RUN conda activate ardupilot_env
+
+# Install the required Python packages inside this environment:
+# Install empy via pip (conda doesn't provide it for this setup)
+RUN /opt/anaconda/bin/pip install pip install pip install
+RUN /opt/anaconda/bin/pip install pip install empy==3.3.4 pexpect future pymavlink && \
+    /opt/anaconda/envs/ardupilot_env/bin/pip install empy==3.3.4 pexpect future pymavlink
+    
+# Ensure conda is initialized and ardupilot_env is activated on container start
+RUN echo "source /opt/anaconda/etc/profile.d/conda.sh" >> ~/.bashrc && \
+    echo "conda activate ardupilot_env" >> ~/.bashrc
+
+
 CMD ["/bin/bash"]
 
