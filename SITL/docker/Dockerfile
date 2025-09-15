@@ -89,7 +89,7 @@ SHELL ["/bin/bash", "-c"]
 RUN conda create -n ardupilot_env python=3.10 -y && \
     source /opt/anaconda/etc/profile.d/conda.sh && \
     conda activate ardupilot_env && \
-    pip install empy==3.3.4 pexpect future pymavlink
+    pip install empy==3.3.4 pexpect future pymavlink MAVProxy --user
 
 USER root
 RUN apt-get update && apt-get install -y \
