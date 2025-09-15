@@ -59,7 +59,10 @@ USER builder
 WORKDIR /home/builder/ardupilot
 
 # Install system deps for Anaconda
-RUN apt update && apt install -y wget bzip2 sudo git
+RUN sudo apt update && sudo apt install -y wget bzip2 sudo git
+
+# make sure we’re root here
+USER root
 
 # Download and install full Anaconda 4.8.3 (Python 3.10)
 WORKDIR /opt
@@ -67,18 +70,38 @@ RUN wget https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh -O 
     bash anaconda.sh -b -p /opt/anaconda && \
     rm anaconda.sh
 
-# Add Anaconda to PATH
-ENV PATH="/opt/anaconda/bin:$PATH"
+# Optional: give builder ownership so he can use conda
+#RUN chmod -R a+rX /opt/anaconda
+#ENV PATH=/opt/anaconda/bin:$PATH
+
+# Add conda to PATH **before** using it
+ENV PATH=/opt/anaconda/bin:$PATH
+
+# switch back to builder
+USER builder
+
+
+# Use bash instead of sh for RUN
+SHELL ["/bin/bash", "-c"]
 
 # Create a new Conda environment for SITL (Python 3.10):
-RUN conda create -n ardupilot_env python=3.10 -y
-RUN conda activate ardupilot_env
+# Create conda env + install packages in one step
+RUN conda create -n ardupilot_env python=3.10 -y && \
+    source /opt/anaconda/etc/profile.d/conda.sh && \
+    conda activate ardupilot_env && \
+    pip install empy==3.3.4 pexpect future pymavlink
 
-# Install the required Python packages inside this environment:
-# Install empy via pip (conda doesn't provide it for this setup)
-RUN /opt/anaconda/bin/pip install pip install pip install
-RUN /opt/anaconda/bin/pip install pip install empy==3.3.4 pexpect future pymavlink && \
-    /opt/anaconda/envs/ardupilot_env/bin/pip install empy==3.3.4 pexpect future pymavlink
+USER root
+RUN apt-get update && apt-get install -y \
+    gcc-arm-none-eabi \
+    binutils-arm-none-eabi \
+    gdb-multiarch \
+ && apt-get clean
+USER builder
+
+# Make env the default python path
+ENV PATH=/opt/anaconda/envs/ardupilot_env/bin:$PATH
+#ENV PATH="/opt/anaconda/bin:$PATH"
     
 # Ensure conda is initialized and ardupilot_env is activated on container start
 RUN echo "source /opt/anaconda/etc/profile.d/conda.sh" >> ~/.bashrc && \
@@ -86,4 +109,3 @@ RUN echo "source /opt/anaconda/etc/profile.d/conda.sh" >> ~/.bashrc && \
 
 
 CMD ["/bin/bash"]
-
