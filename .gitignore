@@ -4,3 +4,4 @@
 /agile_autonomy_ws
 # Pycharm's config files
 /.idea
+/SITL/docker/ardupilot/
