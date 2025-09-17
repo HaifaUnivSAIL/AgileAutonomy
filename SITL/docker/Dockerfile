@@ -66,7 +66,7 @@ USER root
 
 # Download and install full Anaconda 4.8.3 (Python 3.10)
 WORKDIR /opt
-RUN wget https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh -O anaconda.sh && \
+RUN wget https://repo.anaconda.com/archive/Anaconda3-2025.06-1-Linux-x86_64.sh -O anaconda.sh && \
     bash anaconda.sh -b -p /opt/anaconda && \
     rm anaconda.sh
 
@@ -83,6 +83,16 @@ USER builder
 
 # Use bash instead of sh for RUN
 SHELL ["/bin/bash", "-c"]
+
+# Initialize conda and accept TOS
+RUN /opt/anaconda/bin/conda init bash && \
+    /opt/anaconda/bin/conda config --set always_yes yes --set changeps1 no && \
+    /opt/anaconda/bin/conda config --set auto_activate_base false && \
+    /opt/anaconda/bin/conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main && \
+    /opt/anaconda/bin/conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r && \
+    /opt/anaconda/bin/conda create -n ardupilot_env python=3.10 -y && \
+    /bin/bash -c "source /opt/anaconda/etc/profile.d/conda.sh && conda activate ardupilot_env && pip install empy==3.3.4 pexpect future pymavlink MAVProxy --user"
+
 
 # Create a new Conda environment for SITL (Python 3.10):
 # Create conda env + install packages in one step
@@ -109,6 +119,22 @@ RUN apt-get update && apt-get install -y software-properties-common && \
     update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 100 && \
     update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 100 && \
     apt-get clean
+USER builder
+
+USER root
+# After installing gcc-12/g++-12 and still as USER root, add:
+RUN apt-get update && apt-get install -y \
+    x11-apps \
+    python3-gi \
+    python3-gi-cairo \
+    gir1.2-gtk-3.0 \
+    gir1.2-osmgpsmap-1.0 \
+    libgirepository1.0-dev \
+    gobject-introspection \
+    pkg-config \
+    libcairo2-dev \
+    python3-tk \
+ && apt-get clean
 USER builder
 
 # Make env the default python path
