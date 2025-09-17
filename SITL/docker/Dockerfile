@@ -137,6 +137,10 @@ RUN apt-get update && apt-get install -y \
  && apt-get clean
 USER builder
 
+USER root
+RUN apt-get update && apt-get install -y python3-tk python3-pil.imagetk
+USER builder
+
 # Make env the default python path
 ENV PATH=/opt/anaconda/envs/ardupilot_env/bin:$PATH
 #ENV PATH="/opt/anaconda/bin:$PATH"
