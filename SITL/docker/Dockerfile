@@ -117,7 +117,9 @@ ENV PATH=/opt/anaconda/envs/ardupilot_env/bin:$PATH
     
 # Ensure conda is initialized and ardupilot_env is activated on container start
 RUN echo "source /opt/anaconda/etc/profile.d/conda.sh" >> ~/.bashrc && \
-    echo "conda activate ardupilot_env" >> ~/.bashrc
+    echo "conda activate ardupilot_env" >> ~/.bashrc && \
+    echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc && \
+    source ~/.bashrc
 
 
 CMD ["/bin/bash"]
