@@ -34,7 +34,10 @@ export CUDA_HOME=$CONDA_PREFIX
 export PATH=$CUDA_HOME/bin:$PATH
 export LD_LIBRARY_PATH=$CUDA_HOME/lib:$LD_LIBRARY_PATH
 
-pip install --upgrade tensorflow
+ln -s /usr/local/cuda-12.4 /usr/local/cuda
+pip uninstall -y tensorflow tensorflow-cpu tensorflow-gpu || true
+pip install --upgrade "tensorflow[and-cuda]"
+
 
 export CUDA_HOME=/opt/anaconda/envs/ros_env
 export PATH=$CUDA_HOME/bin:$PATH
@@ -55,6 +58,9 @@ echo 'export TF_CPP_MIN_LOG_LEVEL=0' >> ~/.bashrc
 # Temporary fix:
 export XLA_FLAGS="--xla_gpu_cuda_data_dir=${CUDA_HOME}"
 # Permanent fix:
+mkdir -p /opt/anaconda/envs/ros_env/etc/conda/activate.d
+mkdir -p /opt/anaconda/envs/ros_env/etc/conda/deactivate.d
+
 echo 'export XLA_FLAGS="--xla_gpu_cuda_data_dir=/usr/local/cuda-12.4"' >> /opt/anaconda/envs/ros_env/etc/conda/activate.d/env_vars.sh
 
 
