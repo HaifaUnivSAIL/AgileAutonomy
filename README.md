@@ -35,14 +35,6 @@ Follow the steps below to install Docker, set up the container environment, and 
 7. **Run this script to setup GPU settings such as CUDA, Cudnn and the matching tf version**:
    ```bash
     ./gpu_setup.sh
-
-To check if the script "gpu_setup.sh" did the job successfully, run the follownig command:
-   ```bash
-    ./python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
-    
-  This should output a list of GPUs i.e: 
-  [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU'), PhysicalDevice(name='/physical_device:GPU:1', device_type='GPU')]
-    
 ---
 
 📝 Notes
@@ -54,10 +46,14 @@ To check if the script "gpu_setup.sh" did the job successfully, run the followni
 2. **🧹 To clean everything (containers, volumes, and build folders)**:
    ```bash
     ./remove_everything.sh
-    
 3. **💡 To run Pycharm from within the docker just type**:
    ```bash
     pycharm
+4. **💡 To check if the script "gpu_setup.sh" did the job, run the follownig command**:
+   ```bash
+    python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
+  If it worked successfully, the output should be a list of GPUs i.e:<br> 
+  *[PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU'), PhysicalDevice(name='/physical_device:GPU:1', device_type='GPU')]*
 
 ##  Dataset location
 
