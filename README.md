@@ -36,14 +36,15 @@ Follow the steps below to install Docker, set up the container environment, and 
    ```bash
     ./gpu_setup.sh
 
-Running the follownig command:
+To check if the script "gpu_setup.sh" did the job successfully, run the follownig command:
    ```bash
     python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
     
-Should output a list of GPUs i.e: 
+  This should output a list of GPUs i.e: 
    ```bash
     [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU'), PhysicalDevice(name='/physical_device:GPU:1', device_type='GPU')]
     
+---
 
 📝 Notes
 
