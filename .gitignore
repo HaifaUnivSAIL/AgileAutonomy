@@ -5,3 +5,4 @@
 # Pycharm's config files
 /.idea
 /SITL/docker/ardupilot/
+/SITL/docker/MP/
