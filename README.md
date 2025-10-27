@@ -59,6 +59,8 @@ Follow the steps below to install Docker, set up the container environment, and 
 
 **Host computer location**:
 Place your data in the "datasets" folder (if doesnt exist create one). 
+The official paper's dataset can be found at [this link](https://zenodo.org/record/5517791/files/agile_autonomy_dataset.tar.xz?download=1).
+This dataset was used to train the model we provide and collected at an average speed of 7 m/s. To do this, adapt the file [train\_settings.yaml](planner_learning/config/train_settings.yaml) to point to the train and test folder
 
 Note: The "datasets" folder should reside at the same folder as the project's folder "AgileAutonomy" is (i.e youll see AgileAutonomy/docker/ or AgileAutonomy/setup_agile_autonomy.sh).
 

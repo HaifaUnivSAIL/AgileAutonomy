@@ -6,3 +6,10 @@
 /.idea
 /SITL/docker/ardupilot/
 /SITL/docker/MP/
+/SITL/docker/ardupilot_gazebo/
+
+/SITL/docker/build/
+/SITL/docker/install/
+/SITL/docker/log/
+
+/.gitignore

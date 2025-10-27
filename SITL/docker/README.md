@@ -12,16 +12,20 @@ Follow the steps below to Install the SITL docker & Mission planner
 2. **Launch the Docker container**:
    ```bash
     ./launch.sh
-
-3. **Run the following command:**
+    
+3. **Launch the Docker container**:
    ```bash
-    ./sim_vehicle.py -v ArduCopter --console --map --out udp:127.0.0.1:14550
+    ./Install_MissionPlanner.sh
+
+4. **Run the following command:**
+   ```bash
+    ./Tools/autotest/sim_vehicle.py -v ArduCopter --console --map --out udp:127.0.0.1:14550
 
 ## 2nd terminal with Mission planner: 
 
-1. **Go inside the MP directory and run Mission planner using MONO**:
+1. **Go outside of the MP directory and run Mission planner using MONO**:
    ```bash
-    ./mono ./MP/MissionPlanner.exe
+    mono ./MP/MissionPlanner.exe
 
 ## Inside the ArduPilot:
 **At the upper right corner of the screen:**<br>
