@@ -11,5 +11,6 @@
 /SITL/docker/build/
 /SITL/docker/install/
 /SITL/docker/log/
+/SITL/docker/gz_ws/
 
 /.gitignore
