@@ -9,5 +9,9 @@ fi
 xhost +local:docker
 
 # Build Docker image
-docker build . -t ardupilot-builder --build-arg USER_UID=$(id -u) --build-arg USER_GID=$(id -g)
+## Old Docker- Build command
+#docker build . -t ardupilot-builder --build-arg USER_UID=$(id -u) --build-arg USER_GID=$(id -g)
+
+## New Docker- Build command
+docker build -t ardupilot-gz-harmonic-humble .
 sudo chmod +x ./launch.sh

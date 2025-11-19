@@ -1,11 +1,16 @@
 #!/bin/bash
+
+# allow X connections from local host
+xhost +local:root
+
 docker run --rm -it \
-  --network=host \
+  --gpus all \
+  --network host \
   -e DISPLAY=$DISPLAY \
+  -e NVIDIA_VISIBLE_DEVICES=all \
+  -e NVIDIA_DRIVER_CAPABILITIES=all \
   -v /tmp/.X11-unix:/tmp/.X11-unix \
   -v $(pwd)/ardupilot:/home/builder/ardupilot \
   -w /home/builder/ardupilot \
-  -u $(id -u):$(id -g) \
-  ardupilot-builder \
-  bash
+  ardupilot-gz-harmonic-humble /bin/bash
 

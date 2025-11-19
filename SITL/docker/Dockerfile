@@ -1,156 +1,142 @@
+# ---------------------------
+# Ubuntu 22.04 Base + ArduPilot + Gazebo Harmonic + ROS2 Humble
+# ---------------------------
 FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive \
     TZ=Etc/UTC \
     LANG=en_US.UTF-8 \
     LANGUAGE=en_US:en \
-    LC_ALL=en_US.UTF-8
+    LC_ALL=en_US.UTF-8 \
+    APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=1
 
-# Basic build tools and prerequisites
+# ---------------------------
+# Basic system dependencies
+# ---------------------------
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \
     apt-get update && apt-get install -y --no-install-recommends \
-      wget curl git ca-certificates sudo build-essential ccache \
-      python3 python3-pip python3-venv python3-setuptools python3-wheel python3-future python3-lxml python3-opencv \
-      locales tzdata && \
-    ln -sf /usr/bin/python3 /usr/bin/python || true && \
-    locale-gen en_US.UTF-8 && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+      ca-certificates wget curl gnupg lsb-release apt-transport-https \
+      git sudo locales tzdata build-essential ccache pkg-config \
+      python3 python3-pip python3-venv python3-setuptools python3-wheel \
+      python3-opencv python3-lxml tzdata software-properties-common \
+    && locale-gen en_US.UTF-8 \
+    && ln -sf /usr/bin/python3 /usr/bin/python || true \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+# ---------------------------
+# Add OSRF Gazebo repository
+# ---------------------------
+RUN curl -sSL https://packages.osrfoundation.org/gazebo.gpg \
+      -o /usr/share/keyrings/gazebo-archive-keyring.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/gazebo-archive-keyring.gpg] \
+      http://packages.osrfoundation.org/gazebo/ubuntu-stable jammy main" \
+      > /etc/apt/sources.list.d/gazebo-stable.list
+
+# ---------------------------
+# Add ROS 2 Humble repository
+# ---------------------------
+RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
+      -o /usr/share/keyrings/ros-archive-keyring.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] \
+      http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/ros2.list
+
+# ---------------------------
+# Install Gazebo + ROS 2 + Python ROS tools
+# ---------------------------
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      gz-harmonic \
+      libgz-cmake3-dev libgz-math7-dev libgz-msgs10-dev libgz-transport13-dev libgz-sim8-dev \
+      ros-humble-desktop \
+      python3-colcon-common-extensions python3-vcstool python3-rosdep python3-rosinstall-generator \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Initialize rosdep
+RUN rosdep init || true
+RUN rosdep update || true
+
+# ---------------------------
 # Create builder user
-RUN groupadd --gid 1016 builder || true && \
-    useradd --uid 1016 --gid 1016 -m builder || true && \
-    echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+# ---------------------------
+ARG USERNAME=builder
+ARG USER_UID=1016
+ARG USER_GID=1016
 
+RUN groupadd --gid ${USER_GID} ${USERNAME} || true && \
+    useradd --uid ${USER_UID} --gid ${USER_GID} -m ${USERNAME} || true && \
+    echo "${USERNAME} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
+    usermod -a -G dialout ${USERNAME} || true
 
-# Switch to builder to run ArduPilot prereqs script
-#USER builder
-#WORKDIR /home/builder/ardupilot
-#RUN Tools/environment_install/install-prereqs-ubuntu.sh -y
+USER ${USERNAME}
+WORKDIR /home/${USERNAME}
 
-# Add builder to dialout group before running script
+# ---------------------------
+# Install Anaconda
+# ---------------------------
 USER root
-RUN usermod -a -G dialout builder
-
-# Switch to builder user for running the prereqs script
-USER builder
-WORKDIR /home/builder/ardupilot
-
-# Ensure USER env var is correct for script
-ENV USER=builder
-
-# Run ArduPilot prerequisites script
-RUN sudo -E Tools/environment_install/install-prereqs-ubuntu.sh -y || true
-
-
-# Switch back to root for system-level configuration
-USER root
-WORKDIR /home/builder
-
-# Create ccache symlinks for arm compilers (harmless if toolchain not yet present)
-RUN mkdir -p /usr/lib/ccache && \
-    ln -sf /usr/bin/ccache /usr/lib/ccache/arm-none-eabi-g++ && \
-    ln -sf /usr/bin/ccache /usr/lib/ccache/arm-none-eabi-gcc
-
-# Add ArduPilot tools to PATH
-ENV PATH=$PATH:/home/builder/ardupilot/Tools/autotest:/usr/lib/ccache
-
-# Default to builder user
-USER builder
-WORKDIR /home/builder/ardupilot
-
-# Install system deps for Anaconda
-RUN sudo apt update && sudo apt install -y wget bzip2 sudo git
-
-# make sure we’re root here
-USER root
-
-# Download and install full Anaconda 4.8.3 (Python 3.10)
 WORKDIR /opt
-RUN wget https://repo.anaconda.com/archive/Anaconda3-2025.06-1-Linux-x86_64.sh -O anaconda.sh && \
-    bash anaconda.sh -b -p /opt/anaconda && \
-    rm anaconda.sh
+RUN apt-get update && apt-get install -y wget bzip2 && apt-get clean
+RUN wget -q https://repo.anaconda.com/archive/Anaconda3-2025.06-1-Linux-x86_64.sh -O /opt/anaconda.sh && \
+    bash /opt/anaconda.sh -b -p /opt/anaconda && \
+    rm /opt/anaconda.sh
 
-# Optional: give builder ownership so he can use conda
-#RUN chmod -R a+rX /opt/anaconda
-#ENV PATH=/opt/anaconda/bin:$PATH
-
-# Add conda to PATH **before** using it
 ENV PATH=/opt/anaconda/bin:$PATH
 
-# switch back to builder
-USER builder
-
-
-# Use bash instead of sh for RUN
-SHELL ["/bin/bash", "-c"]
-
-# Initialize conda and accept TOS
+# ---------------------------
+# Create ArduPilot conda env & install Python deps
+# ---------------------------
+USER ${USERNAME}
 RUN /opt/anaconda/bin/conda init bash && \
     /opt/anaconda/bin/conda config --set always_yes yes --set changeps1 no && \
     /opt/anaconda/bin/conda config --set auto_activate_base false && \
     /opt/anaconda/bin/conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main && \
     /opt/anaconda/bin/conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r && \
     /opt/anaconda/bin/conda create -n ardupilot_env python=3.10 -y && \
-    /bin/bash -c "source /opt/anaconda/etc/profile.d/conda.sh && conda activate ardupilot_env && pip install empy==3.3.4 pexpect future pymavlink MAVProxy --user"
+    /opt/anaconda/bin/conda run -n ardupilot_env pip install --upgrade pip && \
+    /opt/anaconda/bin/conda run -n ardupilot_env pip install --user \
+      empy==3.3.4 pexpect future pymavlink MAVProxy catkin_pkg
 
-
-# Create a new Conda environment for SITL (Python 3.10):
-# Create conda env + install packages in one step
-RUN conda create -n ardupilot_env python=3.10 -y && \
-    source /opt/anaconda/etc/profile.d/conda.sh && \
-    conda activate ardupilot_env && \
-    pip install empy==3.3.4 pexpect future pymavlink MAVProxy --user
-
-USER root
-RUN apt-get update && apt-get install -y \
-    gcc-arm-none-eabi \
-    binutils-arm-none-eabi \
-    gdb-multiarch \
- && apt-get clean
-USER builder
-
-# 🔧 Fix: Upgrade GCC in Docker
-# You can install a newer GCC via the Ubuntu Toolchain PPA:
-USER root
-RUN apt-get update && apt-get install -y software-properties-common && \
-    add-apt-repository ppa:ubuntu-toolchain-r/test -y && \
-    apt-get update && \
-    apt-get install -y gcc-12 g++-12 && \
-    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 100 && \
-    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 100 && \
-    apt-get clean
-USER builder
-
-USER root
-# After installing gcc-12/g++-12 and still as USER root, add:
-RUN apt-get update && apt-get install -y \
-    x11-apps \
-    python3-gi \
-    python3-gi-cairo \
-    gir1.2-gtk-3.0 \
-    gir1.2-osmgpsmap-1.0 \
-    libgirepository1.0-dev \
-    gobject-introspection \
-    pkg-config \
-    libcairo2-dev \
-    python3-tk \
- && apt-get clean
-USER builder
-
-USER root
-RUN apt-get update && apt-get install -y python3-tk python3-pil.imagetk
-USER builder
-
-# Make env the default python path
 ENV PATH=/opt/anaconda/envs/ardupilot_env/bin:$PATH
-#ENV PATH="/opt/anaconda/bin:$PATH"
-    
-# Ensure conda is initialized and ardupilot_env is activated on container start
+
+# ---------------------------
+# Install ARM toolchain & GCC 12
+# ---------------------------
+USER root
+RUN apt-get update && apt-get install -y \
+      gcc-arm-none-eabi binutils-arm-none-eabi gdb-multiarch \
+      software-properties-common \
+    && add-apt-repository ppa:ubuntu-toolchain-r/test -y \
+    && apt-get update && apt-get install -y gcc-12 g++-12 \
+    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 100 \
+    && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 100 \
+    && apt-get clean
+
+# ---------------------------
+# Install GUI & Python GTK deps
+# ---------------------------
+RUN apt-get update && apt-get install -y \
+      x11-apps python3-gi python3-gi-cairo gir1.2-gtk-3.0 gir1.2-osmgpsmap-1.0 \
+      libgirepository1.0-dev gobject-introspection pkg-config libcairo2-dev python3-tk python3-pil.imagetk mesa-utils \
+    && apt-get clean
+
+# ---------------------------
+# Setup bashrc for conda & ardupilot_env
+# ---------------------------
+USER ${USERNAME}
 RUN echo "source /opt/anaconda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda config --set changeps1 True" >> ~/.bashrc && \
     echo "conda activate ardupilot_env" >> ~/.bashrc && \
-    echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc && \
-    source ~/.bashrc
+    echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
 
+USER root
+RUN echo "source /opt/anaconda/etc/profile.d/conda.sh" >> /root/.bashrc && \
+    echo "conda activate ardupilot_env" >> /root/.bashrc
 
+# ---------------------------
+# Set default working dir & user
+# ---------------------------
+USER ${USERNAME}
+WORKDIR /home/${USERNAME}
 CMD ["/bin/bash"]
+
